@@ -5,28 +5,38 @@ const cors = require('cors');
 const conectarDB = require('./config/db');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
-// Conectar MongoDB
 conectarDB();
 
-// ==========================
-// CORS TOTAL
-// ==========================
+// ======================
+// CORS MANUAL
+// ======================
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, OPTIONS'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(cors());
 
-app.options('*', cors());
-
-// ==========================
-// Middlewares
-// ==========================
-
 app.use(express.json());
 
-// ==========================
-// Ruta prueba
-// ==========================
+// ======================
+// RUTAS
+// ======================
 
 app.get('/', (req, res) => {
   res.json({
@@ -34,15 +44,13 @@ app.get('/', (req, res) => {
   });
 });
 
-// ==========================
-// Rutas API
-// ==========================
-
 app.use('/api/registros', require('./routes/registros'));
 
-// ==========================
-// Iniciar servidor
-// ==========================
+// ======================
+// SERVER
+// ======================
+
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
