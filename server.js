@@ -1,35 +1,32 @@
 require('dotenv').config();
-const express    = require('express');
-const cors       = require('cors');
+const express = require('express');
+const cors = require('cors');
 const conectarDB = require('./config/db');
 
-// ── Conectar a MongoDB ────────────────────────────────────
+// Conectar MongoDB
 conectarDB();
 
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 4000;
 
-// ── Middlewares ───────────────────────────────────────────
+// CORS
 app.use(cors({
-  origin: [
-    'http://localhost:4200',
-    process.env.FRONTEND_URL
-  ],
+  origin: '*',
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 
-// ── Rutas ─────────────────────────────────────────────────
+// Rutas
 app.use('/api/registros', require('./routes/registros'));
 
-// Ruta de verificación
+// Ruta principal
 app.get('/', (req, res) => {
-  res.json({ message: '✅ Backend MEAN - Rendimiento Académico funcionando' });
+  res.json({ message: '✅ Backend funcionando correctamente' });
 });
 
-// ── Iniciar servidor ──────────────────────────────────────
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });

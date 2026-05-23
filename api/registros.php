@@ -1,4 +1,4 @@
-<?php
+y<?php
 // ============================================================
 //  API REST — registros académicos
 //  GET  ?uid=xxx   → devuelve todos los registros del usuario
