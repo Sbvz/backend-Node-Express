@@ -6,46 +6,54 @@ const cors = require('cors');
 const conectarDB = require('./config/db');
 
 const app = express();
+const PORT = process.env.PORT || 4000;
 
-// ======================================================
-// CONECTAR MONGODB
-// ======================================================
+// =========================
+// Conectar MongoDB
+// =========================
 conectarDB();
 
-// ======================================================
-// CORS
-// ======================================================
-app.use(cors({
-  origin: '*'
-}));
-
-// ======================================================
-// MIDDLEWARES
-// ======================================================
+// =========================
+// Middlewares
+// =========================
 app.use(express.json());
 
-// ======================================================
-// RUTAS
-// ======================================================
-const registrosRoutes = require('./routes/registros');
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-app.use('/api/registros', registrosRoutes);
-
-// ======================================================
-// RUTA PRINCIPAL
-// ======================================================
+// =========================
+// Ruta principal
+// =========================
 app.get('/', (req, res) => {
   res.json({
     ok: true,
-    mensaje: 'Backend funcionando correctamente'
+    message: '✅ Backend funcionando correctamente'
   });
 });
 
-// ======================================================
-// PUERTO
-// ======================================================
-const PORT = process.env.PORT || 4000;
+// =========================
+// Rutas API
+// =========================
+app.use('/api/registros', require('./routes/registros'));
 
-app.listen(PORT, '0.0.0.0', () => {
+// =========================
+// Middleware de errores
+// =========================
+app.use((err, req, res, next) => {
+  console.error('❌ Error del servidor:', err);
+
+  res.status(500).json({
+    ok: false,
+    error: err.message
+  });
+});
+
+// =========================
+// Iniciar servidor
+// =========================
+app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
