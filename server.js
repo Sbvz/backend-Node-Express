@@ -1,32 +1,49 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const conectarDB = require('./config/db');
 
-// Conectar MongoDB
-conectarDB();
-
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// CORS
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Conectar MongoDB
+conectarDB();
+
+// ==========================
+// CORS TOTAL
+// ==========================
+
+app.use(cors());
+
+app.options('*', cors());
+
+// ==========================
+// Middlewares
+// ==========================
 
 app.use(express.json());
 
-// Rutas
-app.use('/api/registros', require('./routes/registros'));
+// ==========================
+// Ruta prueba
+// ==========================
 
-// Ruta principal
 app.get('/', (req, res) => {
-  res.json({ message: '✅ Backend funcionando correctamente' });
+  res.json({
+    message: '✅ Backend funcionando correctamente'
+  });
 });
 
+// ==========================
+// Rutas API
+// ==========================
+
+app.use('/api/registros', require('./routes/registros'));
+
+// ==========================
 // Iniciar servidor
+// ==========================
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
