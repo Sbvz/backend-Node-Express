@@ -2,16 +2,12 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const conectarDB = require('./config/db');
 
 const app = express();
 
-conectarDB();
-
-// ======================
-// CORS MANUAL
-// ======================
-
+// ======================================================
+// CORS TOTAL
+// ======================================================
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -31,25 +27,45 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
-
 app.use(express.json());
 
-// ======================
-// RUTAS
-// ======================
+// ======================================================
+// MongoDB
+// ======================================================
+const conectarDB = require('./config/db');
 
+conectarDB();
+
+// ======================================================
+// Rutas
+// ======================================================
+app.use('/api/registros', require('./routes/registros'));
+
+// ======================================================
+// Ruta principal
+// ======================================================
 app.get('/', (req, res) => {
   res.json({
-    message: '✅ Backend funcionando correctamente'
+    ok: true,
+    message: 'Backend funcionando correctamente'
   });
 });
 
-app.use('/api/registros', require('./routes/registros'));
+// ======================================================
+// Middleware de errores
+// ======================================================
+app.use((err, req, res, next) => {
+  console.error('ERROR GLOBAL:', err);
 
-// ======================
-// SERVER
-// ======================
+  res.status(500).json({
+    ok: false,
+    error: err.message
+  });
+});
 
+// ======================================================
+// Servidor
+// ======================================================
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
